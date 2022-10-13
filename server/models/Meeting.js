@@ -17,10 +17,11 @@ const MeetingSchema = new mongoose.Schema({
       },
       stress_percentage: {
         type: Number,
-        required: true,
+        default:0
       },
       interaction_percentage: {
         type: Number,
+        default: 0
       },
     },
   ],
@@ -32,4 +33,4 @@ const MeetingSchema = new mongoose.Schema({
   },
 });
 
-module.export = User = mongoose.model("user", UserSchema);
+module.exports = User = mongoose.model("user", UserSchema);
