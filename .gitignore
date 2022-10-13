@@ -1,2 +1,5 @@
 # ommiting the env folder
 env/
+
+# ommiting r
+r.txt
