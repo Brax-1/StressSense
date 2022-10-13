@@ -1,5 +1,6 @@
-# ommiting the env folder
+# ommiting the =setup and build files
 env/
+__pycache__/
 
 # ommiting r
 r.txt
