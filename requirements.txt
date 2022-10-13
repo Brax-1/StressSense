@@ -1,6 +1,0 @@
-imutils
-opencv-python
-opencv-contrib-python
-pillow
-pyautogui
-dlib
