@@ -11,26 +11,18 @@ const MeetingSchema = new mongoose.Schema({
   },
   Users: [
     {
-      user_email: {
-        type: String,
-        required: true,
-      },
-      stress_percentage: {
-        type: Number,
-        default:0
-      },
-      interaction_percentage: {
-        type: Number,
-        default: 0
-      },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Userdata",
     },
   ],
   start_date: {
     type: Date,
+    default:Date.now
   },
   end_date: {
     type: Date,
+    default:Date.now
   },
 });
 
-module.exports = User = mongoose.model("user", UserSchema);
+module.exports = Meeting = mongoose.model("meeting", MeetingSchema);
