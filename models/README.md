@@ -1,7 +1,12 @@
 # Stress detection system based on face cues
 
-Details to be added soon
+## Project Setup
 ---
+```
+$ python3.8 -m venv env
+$ source env/bin/activate
+$ pip3 install -r requirements.txt
+```
 
 ## Requirements
 * dlib
