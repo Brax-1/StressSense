@@ -314,6 +314,9 @@ class Stress:
 										 color=line_color, thickness=line_thickness)
 
 					stress_txt = "Stress level: {:.2f}%".format(self.stress)
+					
+					print(self.stress)
+
 					cap.disp = self.add_text_custom_font(cap.disp, stress_txt, 
 													 position=(text_left_margin, text_upper_margin+space_text_line_upper+space_text_line_lower), 
 													 font=font_bold, color=font_color)
