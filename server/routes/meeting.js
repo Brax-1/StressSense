@@ -22,6 +22,21 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.get("/", async (req, res) => {
+  try {
+    const meets = await Meeting.find();
+    if (!meets) {
+      return res.status(404).json({
+        msg: "meet not found",
+      });
+    }
+    res.json(meets);
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send("server error");
+  }
+});
+
 router.get("/:meetingid", async (req, res) => {
   try {
     const meet = await Meeting.findOne({ meeting_id: req.params.meetingid });
