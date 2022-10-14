@@ -61,4 +61,29 @@ router.get("/:email", async (req, res) => {
   }
 });
 
+router.patch("/interaction/:email/:value", async (req, res) => {
+  try {
+    await Userdata.findOneAndUpdate(
+      { user_email: req.params.email },
+      { interaction_percentage: req.params.value }
+    );
+    res.status(200).send("interaction percentage added succesfully");
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send("server error");
+  }
+});
+router.patch("/stress/:email/:value", async (req, res) => {
+  try {
+    await Userdata.findOneAndUpdate(
+      { user_email: req.params.email },
+      { stress_percentage: req.params.value }
+    );
+    res.status(200).send("stress percentage added succesfully");
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send("server error");
+  }
+});
+
 module.exports = router;

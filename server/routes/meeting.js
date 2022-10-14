@@ -53,6 +53,17 @@ router.get("/allusers/:meetingid", async (req, res) => {
   }
 });
 
-//update endtime left
+router.patch("/endmeet/:meetingid", async (req, res) => {
+  try {
+    await Meeting.findOneAndUpdate(
+      { meeting_id: req.params.meetingid },
+      { end_date: Date.now() }
+    );
+    res.status(200).send("endtime added succesfully for meet");
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send("server error");
+  }
+});
 
 module.exports = router;
