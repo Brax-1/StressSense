@@ -28,6 +28,11 @@ const Header = (props) => {
 				</label>
 				<ul onClick={() => setOpenMobileNavigation(!openMobileNavigation)}>
 					<li>
+						<NavLink exact to="/dashboard" className="header_iconbox">
+							Dash Board
+						</NavLink>
+					</li>
+					<li>
 						<NavLink exact to="/joinroom" className="header_iconbox">
 							Join Room
 						</NavLink>

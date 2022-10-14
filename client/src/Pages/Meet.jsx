@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import Peer from "simple-peer";
-import {
-	host
-} from "../utils/APIRoute";
+import { addMeetUser, host, tokenValidator } from "../utils/APIRoute";
 import { Layout } from "../Components";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -12,6 +10,7 @@ import MessageIcon from "@mui/icons-material/Message";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate, useParams } from "react-router-dom";
 import { promiseToaster, toastOption } from "../Constants/constants";
+import Auth from "../utils/Auth";
 
 const Video = (props) => {
 	const ref = useRef();
@@ -37,6 +36,7 @@ const Meet = () => {
 	const userVideo = useRef();
 	const peersRef = useRef([]);
 	const params = useParams();
+	const [currentUser, setCurrentUser] = useState(undefined);
 	const roomID = params.roomID;
 
 	function createPeer(userToSignal, callerID, stream) {
@@ -72,7 +72,51 @@ const Meet = () => {
 
 		return peer;
 	}
-	async function handleSocket() {
+
+	async function getUserId() {
+		const dataPromise = new Promise(function (resolve, reject) {
+			axios
+				.get(tokenValidator, {
+					headers: {
+						"x-Auth-Token": JSON.parse(localStorage.getItem("authToken")),
+					},
+				})
+				.then((res) => {
+					console.log(res, "ress");
+					if (res.status !== 200) {
+						reject(new Error(res.data.msg));
+					} else {
+						handleSocket(res.data.email);
+						resolve("added meeting id");
+					}
+				})
+				.catch((err) => {
+					reject(new Error("Something went wrong ?"));
+				});
+		});
+		toast.promise(dataPromise, promiseToaster, toastOption);
+	}
+	function addUserToDatabase(meetId, email) {
+		const dataPromise = new Promise(function (resolve, reject) {
+			axios
+				.post(addMeetUser, {
+					meeting_id:meetId,
+					user_email:email
+				})
+				.then((res) => {
+					if (res.status !== 200) {
+						reject(new Error(res.data.msg));
+					} else {
+						resolve("Added User Meeting");
+					}
+				})
+				.catch((err) => {
+					reject(new Error("Something went wrong ?"));
+				});
+		});
+		toast.promise(dataPromise, promiseToaster, toastOption);
+	}
+	async function handleSocket(email) {
 		socket.current = io(host);
 		navigator.mediaDevices
 			.getUserMedia({ video: videoConstraints, audio: true })
@@ -81,7 +125,7 @@ const Meet = () => {
 				console.log("open peers");
 				socket.current.emit("join room", roomID);
 				socket.current.on("all users", (users) => {
-					console.log("on peers")
+					console.log("on peers");
 					const peers = [];
 					users.forEach((userID) => {
 						const peer = createPeer(userID, socket.current.id, stream);
@@ -93,6 +137,8 @@ const Meet = () => {
 					});
 					setPeers(peers);
 				});
+
+				addUserToDatabase(roomID, email);
 
 				socket.current.on("user joined", (payload) => {
 					const peer = addPeer(payload.signal, payload.callerID, stream);
@@ -111,15 +157,17 @@ const Meet = () => {
 			});
 	}
 	useEffect(() => {
-		handleSocket();
+		getUserId();
 	}, []);
 	return (
 		<Layout>
-			<div>
-				<video muted ref={userVideo} autoPlay playsInline />
-				{peers.map((peer, index) => {
-					return <Video key={index} peer={peer} />;
-				})}
+			<div className="meet_cover">
+				<div className="vedio_meet_main">
+					<video muted ref={userVideo} autoPlay playsInline />
+					{peers.map((peer, index) => {
+						return <Video key={index} peer={peer} />;
+					})}
+				</div>
 			</div>
 		</Layout>
 	);
