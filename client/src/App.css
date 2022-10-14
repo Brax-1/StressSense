@@ -1,0 +1,54 @@
+*{
+  padding: 0;
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  box-sizing: border-box;
+}
+body {
+  background: rgb(0, 0, 0);
+  overflow: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 0.5em;
+  height: 0em
+}
+::-webkit-scrollbar-button {
+  background: rgb(0, 0, 0)
+}
+::-webkit-scrollbar-track-piece {
+  background: rgb(0, 0, 0)
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(223, 0, 0);
+  border-radius: 50px;
+}
+.auth_input{
+  width: 100%;
+  padding: 10px;
+  border: 1px solid red;
+  border-radius: 3px;
+  background-color: rgb(199, 199, 199);
+  outline: none;
+}
+.auth_input:focus ,.auth_input:hover{
+  background-color: white;
+}
+.mui_btn{
+	background-color: #bf0000 !important;
+	padding: 10px 15px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+.mui_btn svg{
+  margin-right: 5px;
+}
+span{
+	color: #bf0000 ;
+}
+@media only screen and (max-width: 700px) {
+	
+  body{
+    font-size: 10px !important;
+  }
+}
