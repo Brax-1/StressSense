@@ -4,6 +4,10 @@ import VideoCallIcon from "@mui/icons-material/VideoCall";
 import React, { useState } from "react";
 import Layout from "../Components/Animation";
 import { v4 as uuid } from "uuid";
+import { meetDetail } from "../utils/APIRoute";
+import axios from "axios";
+import { promiseToaster, toastOption } from "../Constants/constants";
+import { toast } from "react-toastify";
 
 const Home = () => {
 	const [code, setCode] = useState("");
@@ -13,6 +17,20 @@ const Home = () => {
 	}
 	function handleNewMeet() {
 		const unique_id = uuid();
+
+		const dataPromise = new Promise(function (resolve, reject) {
+			axios
+				.post(meetDetail, {
+					meeting_id:unique_id
+				})
+				.then((res) => {
+					resolve("Metting Created")
+				})
+				.catch((err) => {
+					reject(new Error("Something went wrong ?"));
+				});
+		});
+		toast.promise(dataPromise, promiseToaster, toastOption);
 		const url = `http://localhost:3000/meet/${unique_id}`;
 		window.open(url, "_blank", "noopener,noreferrer");
 	}

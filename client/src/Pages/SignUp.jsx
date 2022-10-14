@@ -7,7 +7,7 @@ import { Layout } from "../Components";
 import { toast } from "react-toastify";
 import { registerRoute } from "../utils/APIRoute";
 import axios from "axios";
-import { toastOption } from "../Constants/constants";
+import { promiseToaster, toastOption } from "../Constants/constants";
 const SignUp = () => {
 	const [info, setinfo] = useState({
 		username: "",
@@ -23,18 +23,17 @@ const SignUp = () => {
 			const dataPromise = new Promise(function (resolve, reject) {
 				axios
 					.post(registerRoute, {
-						username,
+						name : username,
 						email,
-						password,
-						admin,
+						password
 					})
 					.then((res) => {
-						if (res.data.status === false) {
+						if (res.status !== 200) {
 							reject(new Error(res.data.msg));
 						} else {
 							localStorage.setItem(
-								"branchInternational",
-								JSON.stringify(res.data.user)
+								"authToken",
+								JSON.stringify(res.data.token)
 							);
 							navigate("/joinroom");
 							resolve("Registered");
@@ -44,27 +43,7 @@ const SignUp = () => {
 						reject(new Error("Something went wrong ?"));
 					});
 			});
-			toast.promise(
-				dataPromise,
-				{
-					pending: {
-						render() {
-							return "Processing Request";
-						},
-					},
-					success: {
-						render({ data }) {
-							return `Successfully ${data} 👌`;
-						},
-					},
-					error: {
-						render({ data }) {
-							return `${data}`;
-						},
-					},
-				},
-				toastOption
-			);
+			toast.promise(dataPromise, promiseToaster, toastOption);
 		}
 	}
 	function handleValidation() {

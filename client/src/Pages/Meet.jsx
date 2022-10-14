@@ -38,7 +38,7 @@ const Meet = () => {
 	const peersRef = useRef([]);
 	const params = useParams();
 	const roomID = params.roomID;
-    
+
 	function createPeer(userToSignal, callerID, stream) {
 		const peer = new Peer({
 			initiator: true,

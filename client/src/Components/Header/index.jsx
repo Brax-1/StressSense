@@ -42,8 +42,8 @@ const Header = (props) => {
 							SignUp
 						</NavLink>
 					</li>
-					{localStorage.getItem("blazingmist") && (
-						<li onClick={()=>localStorage.removeItem("blazingmist")}>
+					{localStorage.getItem("authToken") && (
+						<li onClick={()=>localStorage.removeItem("authToken")}>
 							<Link exact to="/signin" className="header_iconbox">
 								Logout
 							</Link>

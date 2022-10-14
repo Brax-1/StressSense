@@ -25,12 +25,12 @@ const SignIn = () => {
 						password,
 					})
 					.then((res) => {
-						if (res.data.status === false) {
+						if (res.status !== 200) {
 							reject(new Error(res.data.msg));
 						} else {
 							localStorage.setItem(
-								"branchInternational",
-								JSON.stringify(res.data.user)
+								"authToken",
+								JSON.stringify(res.data.token)
 							);
 							navigate("/joinroom");
 							resolve("Login");
