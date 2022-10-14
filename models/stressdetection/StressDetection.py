@@ -9,6 +9,11 @@ import pyautogui
 
 import dlib
 
+import socketio
+
+sio = socketio.Client()
+
+sio.connect('hosted webapp link')
 
 dlib_keypoints_path 	= "dependencies/shape_predictor_68_face_landmarks.dat"
 
@@ -315,7 +320,7 @@ class Stress:
 
 					stress_txt = "Stress level: {:.2f}%".format(self.stress)
 					
-					print(self.stress)
+					sio.emit('stressframe', self.stress)
 
 					cap.disp = self.add_text_custom_font(cap.disp, stress_txt, 
 													 position=(text_left_margin, text_upper_margin+space_text_line_upper+space_text_line_lower), 
