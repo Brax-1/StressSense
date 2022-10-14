@@ -8,12 +8,13 @@ import imutils
 import pyautogui
 
 import dlib
+from statistics import mean
 
-import socketio
+# import socketio
 
-sio = socketio.Client()
+# sio = socketio.Client()
 
-sio.connect('hosted webapp link')
+# sio.connect('hosted webapp link')
 
 dlib_keypoints_path 	= "dependencies/shape_predictor_68_face_landmarks.dat"
 
@@ -125,6 +126,7 @@ class Stress:
 		self.disp_fps = display_fps
 		self.disp_landmarks = draw_landmarks
 		self.disp_rectangle = draw_bbx
+		self.stress_val_lst = []
 
 
 	def init(self):
@@ -224,6 +226,8 @@ class Stress:
 				self.stress = self.stress+self.hri
 			self.stress = self.stress / 10.0
 
+			self.stress_val_lst.append(self.stress)
+
 	def add_text_custom_font(self, image, text, position, font, color):
 		# Pass the image to PIL
 		pil_img = Image.fromarray(image)
@@ -320,7 +324,7 @@ class Stress:
 
 					stress_txt = "Stress level: {:.2f}%".format(self.stress)
 					
-					sio.emit('stressframe', self.stress)
+					# sio.emit('stressframe', self.stress)
 
 					cap.disp = self.add_text_custom_font(cap.disp, stress_txt, 
 													 position=(text_left_margin, text_upper_margin+space_text_line_upper+space_text_line_lower), 
@@ -342,6 +346,8 @@ class Stress:
 			key = cv2.waitKey(1)
 			if key == 113: # q
 				break
+
+		print("Average value of stress: ", mean(self.stress_val_lst))
 
 if __name__ == "__main__":
 	stress = Stress()
