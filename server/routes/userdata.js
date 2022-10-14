@@ -5,15 +5,21 @@ const mongoose = require("mongoose");
 const router = express.Router();
 
 router.post("/", async (req, res) => {
-  const { user_email, stress_percentage, interaction_percentage, meeting_id } =
-    req.body;
+  const {
+    user_email,
+    user_name,
+    stress_percentage,
+    interaction_percentage,
+    meeting_id,
+  } = req.body;
 
   try {
-    let meet = await Meeting.findOne({ meeting_id:meeting_id });
+    let meet = await Meeting.findOne({ meeting_id: meeting_id });
     let meet_id = meet._id;
     let userdata = new Userdata({
       meet_id,
       user_email,
+      user_name,
       stress_percentage,
       interaction_percentage,
     });
