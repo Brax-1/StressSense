@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import Peer from "simple-peer";
 import {
-	host
+	host, tokenValidator
 } from "../utils/APIRoute";
 import { Layout } from "../Components";
 import { toast } from "react-toastify";
@@ -72,8 +72,35 @@ const Meet = () => {
 
 		return peer;
 	}
+
+	function addUserToDatabase(meetingId) {
+		// const url = `${allUsers}/${meetingId}`;
+		// const dataPromise = new Promise(function (resolve, reject) {
+		// 	axios
+		// 		.get(url)
+		// 		.then((res) => {
+		// 			if (res.status !== 200) {
+		// 				reject(new Error(res.data.msg));
+		// 			} else {
+		// 				setAllUser(res.data);
+		// 				resolve("Fetched Meeting Ids");
+		// 			}
+		// 		})
+		// 		.catch((err) => {
+		// 			reject(new Error("Something went wrong ?"));
+		// 		});
+		// });
+		// toast.promise(dataPromise, promiseToaster, toastOption);
+	}
 	async function handleSocket() {
 		socket.current = io(host);
+		console.log(localStorage.getItem("authToken"))
+		const user = await axios.get(tokenValidator,{
+			headers:{
+				'Authorization':`Bearer ${localStorage.getItem("authToken")}`
+			}
+		});
+		console.log(user,"users")
 		navigator.mediaDevices
 			.getUserMedia({ video: videoConstraints, audio: true })
 			.then((stream) => {
@@ -93,6 +120,8 @@ const Meet = () => {
 					});
 					setPeers(peers);
 				});
+
+				addUserToDatabase(roomID);				
 
 				socket.current.on("user joined", (payload) => {
 					const peer = addPeer(payload.signal, payload.callerID, stream);
@@ -115,11 +144,13 @@ const Meet = () => {
 	}, []);
 	return (
 		<Layout>
-			<div>
+			<div className="meet_cover">
+			<div className="vedio_meet_main">
 				<video muted ref={userVideo} autoPlay playsInline />
 				{peers.map((peer, index) => {
 					return <Video key={index} peer={peer} />;
 				})}
+			</div>
 			</div>
 		</Layout>
 	);
