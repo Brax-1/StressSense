@@ -9,8 +9,10 @@ router.post("/", async (req, res) => {
     req.body;
 
   try {
+    let meet = await Meeting.findOne({ meeting_id:meeting_id });
+    let meet_id = meet._id;
     let userdata = new Userdata({
-      meeting_id,
+      meet_id,
       user_email,
       stress_percentage,
       interaction_percentage,
@@ -19,7 +21,7 @@ router.post("/", async (req, res) => {
 
     await Meeting.updateOne(
       {
-        _id: meeting_id,
+        _id: meet_id,
       },
       {
         $push: { Users: userdata._id },
