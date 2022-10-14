@@ -5,10 +5,6 @@ const MeetingSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  meeting_name: {
-    type: String,
-    required: true,
-  },
   Users: [
     {
       type: mongoose.Schema.Types.ObjectId,
