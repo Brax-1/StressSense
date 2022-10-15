@@ -5,3 +5,5 @@ export const meetDetail = `${host}/api/meeting`
 export const allUsers = `${host}/api/meeting/allusers`
 export const tokenValidator = `${host}/api/auth`
 export const addMeetUser = `${host}/api/userdata`
+export const addUserStress = `${host}/api/stress`
+export const addUserInteraction = `${host}/api/interaction`
