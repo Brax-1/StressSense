@@ -30,3 +30,7 @@ $ python run.py --input examples/004.mp4 --rectangle --landmarks --forehead --fo
 * --fps: to show the framerate on the bottom left of the screen. (default: False)
 
 * Press 'q' on the keyboard to quit the program.
+
+
+Note: the model file is basically too large to upload so our team have not pushed it in GitHub repo
+However you can search the dat file on Google search by name ```shape_predictor_68_face_landmarks.dat``` and can add it to dependency folder
