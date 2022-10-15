@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const Meeting = require("./models/Meeting");
 const app = express();
 const userRoutes = require("./routes/users");
 const authRoutes = require("./routes/auth");
@@ -61,11 +62,14 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     const roomID = socketToRoom[socket.id];
+
     let room = users[roomID];
     if (room) {
       room = room.filter((id) => id !== socket.id);
       users[roomID] = room;
     }
+    Meeting.findOneAndUpdate({ meeting_id: roomID }, { end_date: Date.now() });
+    //end time of meeting gets updated everytime socket disconnect
   });
 });
 

@@ -4,6 +4,10 @@ const UserdataSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  user_name: {
+    type: String,
+    required: true,
+  },
   stress_percentage: {
     type: Number,
     default: 0,
