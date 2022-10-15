@@ -10,6 +10,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Dashboard, Home, Meet, SignIn, SignUp } from "./Pages";
 import ProtectedRoute from "./ProtectedRoute";
+import Wrap from "./Pages/Wrap";
 function App() {
 	const location = useLocation();
 	return (
@@ -22,6 +23,7 @@ function App() {
 						<Route path="/signup" element={<SignUp />} />
 						<Route path="/joinroom" element={< ProtectedRoute Component={Home} />}/>
 						<Route path="/dashboard" element={< ProtectedRoute Component={Dashboard} />}/>
+						<Route path="/wrap" element={< ProtectedRoute Component={Wrap} />}/>
 						<Route path="/meet/:roomID" element={< ProtectedRoute Component={Meet} />} />
 					</Routes>
 				</AnimatePresence>

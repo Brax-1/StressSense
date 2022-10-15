@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import Peer from "simple-peer";
-import { addMeetUser, host, tokenValidator } from "../utils/APIRoute";
+import { addMeetUser, addUserInteraction, host, tokenValidator } from "../utils/APIRoute";
 import { Layout } from "../Components";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -11,6 +11,9 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate, useParams } from "react-router-dom";
 import { promiseToaster, toastOption } from "../Constants/constants";
 import Auth from "../utils/Auth";
+import * as faceapi from "face-api.js";
+
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 const Video = (props) => {
 	const ref = useRef();
@@ -20,7 +23,7 @@ const Video = (props) => {
 			ref.current.srcObject = stream;
 		});
 	}, []);
-
+	
 	return <video playsInline autoPlay ref={ref} />;
 };
 
@@ -31,14 +34,76 @@ const videoConstraints = {
 
 const Meet = () => {
 	const socket = useRef();
-
+	const [currentStress, setCurrentStress] = useState(0);
+	const [currentStressIterations, setCurrentStressIteration] = useState(1);
+	const heightv = videoConstraints.height;
+	const widthv = videoConstraints.width;
 	const [peers, setPeers] = useState([]);
 	const userVideo = useRef();
 	const peersRef = useRef([]);
 	const params = useParams();
-	const [currentUser, setCurrentUser] = useState(undefined);
+	const [intializing, setInitializing] = useState(false);
+	const canvasRef = useRef();
 	const roomID = params.roomID;
+	const [currentUser,setCurrentUser]=useState(undefined)
+	const {
+        transcript,
+        resetTranscript,
+      } = useSpeechRecognition();
+    const [cnt,setwordcnt] = useState(0)
+    useEffect(() => {
+        SpeechRecognition.startListening({continuous:true});
+        console.log('start listening');
+    },[]);
 
+	const patchUrl = `addUserInteraction/${roomID}/${currentUser?currentUser.email:""}/${cnt}`
+    useEffect(()=>{
+        setwordcnt((prev)=>prev+transcript.split(' ').length)
+		
+		const dataPromise = new Promise(function (resolve, reject) {
+			axios
+				.patch(patchUrl)
+				.then((res) => {
+					console.log(res, "ress");
+					if (res.status !== 200) {
+						reject(new Error(res.data.msg));
+					} else {
+						resolve("added interaction level");
+					}
+				})
+				.catch((err) => {
+					reject(new Error("Something went wrong ?"));
+				});
+		});
+		toast.promise(dataPromise, promiseToaster, toastOption);
+    },[transcript])
+	// const ctx = document.getElementById("myChart");
+
+	// const {
+    //     transcript,
+    //     resetTranscript,
+    //   } = useSpeechRecognition();
+    
+    // useEffect(() => {
+    //     SpeechRecognition.startListening({continuous:true});
+    //     console.log('start listening');
+    // },[]);
+
+    // let wrdcnt = 0;
+    //  wrdcnt = wrdcnt + transcript.split(' ').length
+
+
+	async function getModel() {
+		const MODEL_URL = process.env.PUBLIC_URL + "/Models";
+		console.log(MODEL_URL, "url");
+		setInitializing(true);
+		Promise.all([
+			faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+			faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+			faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
+			faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL),
+		]).then(getUserId);
+	}
 	function createPeer(userToSignal, callerID, stream) {
 		const peer = new Peer({
 			initiator: true,
@@ -72,8 +137,46 @@ const Meet = () => {
 
 		return peer;
 	}
-
+	function handleVideoPlay() {
+		setInterval(async () => {
+			if (intializing) {
+				setInitializing(false);
+			}
+			canvasRef.current.innerHtml = faceapi.createCanvasFromMedia(
+				userVideo.current
+			);
+			const displaySize = {
+				width: widthv,
+				height: heightv,
+			};
+			faceapi.matchDimensions(canvasRef.current, displaySize);
+			const detection = await faceapi
+				.detectAllFaces(
+					userVideo.current,
+					new faceapi.TinyFaceDetectorOptions()
+				)
+				.withFaceLandmarks()
+				.withFaceExpressions();
+			console.log(detection, "det");
+			const resizedDetection = faceapi.resizeResults(detection, displaySize);
+			canvasRef.current.getContext("2d").clearRect(0, 0, widthv, heightv);
+			faceapi.draw.drawDetections(canvasRef.current, resizedDetection);
+			faceapi.draw.drawFaceLandmarks(canvasRef.current, resizedDetection);
+			faceapi.draw.drawFaceExpressions(canvasRef.current, resizedDetection);
+			console.log(detection, detection.length !== 0);
+			if (detection.length !== 0) {
+				setCurrentStress(
+					detection[0].expressions.angry * 100 +
+						detection[0].expressions.fearful * 100 +
+						detection[0].expressions.sad * 100 +
+						detection[0].expressions.disgusted * 100
+				);
+			}
+		}, 100);
+	}
+	console.log(currentStressIterations, currentStress, "stress");
 	async function getUserId() {
+		console.log("getUser");
 		const dataPromise = new Promise(function (resolve, reject) {
 			axios
 				.get(tokenValidator, {
@@ -86,7 +189,8 @@ const Meet = () => {
 					if (res.status !== 200) {
 						reject(new Error(res.data.msg));
 					} else {
-						handleSocket(res.data.email);
+						handleSocket(res.data);
+						setCurrentUser(res.data)
 						resolve("added meeting id");
 					}
 				})
@@ -96,12 +200,13 @@ const Meet = () => {
 		});
 		toast.promise(dataPromise, promiseToaster, toastOption);
 	}
-	function addUserToDatabase(meetId, email) {
+	function addUserToDatabase(meetId, email, name) {
 		const dataPromise = new Promise(function (resolve, reject) {
 			axios
 				.post(addMeetUser, {
-					meeting_id:meetId,
-					user_email:email
+					meeting_id: meetId,
+					user_email: email,
+					user_name: name,
 				})
 				.then((res) => {
 					if (res.status !== 200) {
@@ -116,16 +221,20 @@ const Meet = () => {
 		});
 		toast.promise(dataPromise, promiseToaster, toastOption);
 	}
-	async function handleSocket(email) {
+	async function handleSocket(userdata) {
 		socket.current = io(host);
+
+		socket.current.on("stress", (users) => {
+			console.log(users, "stress");
+		});
 		navigator.mediaDevices
 			.getUserMedia({ video: videoConstraints, audio: true })
 			.then((stream) => {
 				userVideo.current.srcObject = stream;
-				console.log("open peers");
+				console.log("join room called");
 				socket.current.emit("join room", roomID);
 				socket.current.on("all users", (users) => {
-					console.log("on peers");
+					console.log("on peers", users);
 					const peers = [];
 					users.forEach((userID) => {
 						const peer = createPeer(userID, socket.current.id, stream);
@@ -138,7 +247,7 @@ const Meet = () => {
 					setPeers(peers);
 				});
 
-				addUserToDatabase(roomID, email);
+				addUserToDatabase(roomID, userdata.email, userdata.name);
 
 				socket.current.on("user joined", (payload) => {
 					const peer = addPeer(payload.signal, payload.callerID, stream);
@@ -156,14 +265,40 @@ const Meet = () => {
 				});
 			});
 	}
+	function getCurrentStress(stress, iteration) {
+		console.log(stress, "valoe");
+		var res = stress / (5 * iteration);
+		res = res * 100;
+		res = res * 80;
+		if (res > 80) {
+			res = 76.98;
+		}
+		
+		return Math.round(res);
+	}
 	useEffect(() => {
-		getUserId();
+		getModel();
 	}, []);
 	return (
 		<Layout>
 			<div className="meet_cover">
+				<div style={{color:"white",fontSize:"50px",position:"absolute",top:"50px",left:"50px"}}>
+					Current Stress Level :{" "}
+					{getCurrentStress(currentStress, currentStressIterations)}%
+				</div>
 				<div className="vedio_meet_main">
-					<video muted ref={userVideo} autoPlay playsInline />
+					<div style={{ display: "flex", justifyContent: "center" }}>
+						<video
+							muted
+							ref={userVideo}
+							autoPlay
+							playsInline
+							onPlay={handleVideoPlay}
+						/>
+
+						<canvas ref={canvasRef} style={{ position: "absolute" }} />
+					</div>
+
 					{peers.map((peer, index) => {
 						return <Video key={index} peer={peer} />;
 					})}
