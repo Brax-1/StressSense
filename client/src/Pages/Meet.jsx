@@ -45,6 +45,7 @@ const Meet = () => {
 	const [intializing, setInitializing] = useState(false);
 	const canvasRef = useRef();
 	const roomID = params.roomID;
+	const navigate = useNavigate()
 	const [currentUser,setCurrentUser]=useState(undefined)
 	const {
         transcript,
@@ -53,7 +54,6 @@ const Meet = () => {
     const [cnt,setwordcnt] = useState(0)
     useEffect(() => {
         SpeechRecognition.startListening({continuous:true});
-        console.log('start listening');
     },[]);
 
 	const patchUrl = `addUserInteraction/${roomID}/${currentUser?currentUser.email:""}/${cnt}`
@@ -64,7 +64,6 @@ const Meet = () => {
 			axios
 				.patch(patchUrl)
 				.then((res) => {
-					console.log(res, "ress");
 					if (res.status !== 200) {
 						reject(new Error(res.data.msg));
 					} else {
@@ -77,25 +76,10 @@ const Meet = () => {
 		});
 		toast.promise(dataPromise, promiseToaster, toastOption);
     },[transcript])
-	// const ctx = document.getElementById("myChart");
-
-	// const {
-    //     transcript,
-    //     resetTranscript,
-    //   } = useSpeechRecognition();
-    
-    // useEffect(() => {
-    //     SpeechRecognition.startListening({continuous:true});
-    //     console.log('start listening');
-    // },[]);
-
-    // let wrdcnt = 0;
-    //  wrdcnt = wrdcnt + transcript.split(' ').length
 
 
 	async function getModel() {
 		const MODEL_URL = process.env.PUBLIC_URL + "/Models";
-		console.log(MODEL_URL, "url");
 		setInitializing(true);
 		Promise.all([
 			faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
@@ -157,13 +141,11 @@ const Meet = () => {
 				)
 				.withFaceLandmarks()
 				.withFaceExpressions();
-			console.log(detection, "det");
 			const resizedDetection = faceapi.resizeResults(detection, displaySize);
 			canvasRef.current.getContext("2d").clearRect(0, 0, widthv, heightv);
 			faceapi.draw.drawDetections(canvasRef.current, resizedDetection);
 			faceapi.draw.drawFaceLandmarks(canvasRef.current, resizedDetection);
 			faceapi.draw.drawFaceExpressions(canvasRef.current, resizedDetection);
-			console.log(detection, detection.length !== 0);
 			if (detection.length !== 0) {
 				setCurrentStress(
 					detection[0].expressions.angry * 100 +
@@ -174,9 +156,7 @@ const Meet = () => {
 			}
 		}, 100);
 	}
-	console.log(currentStressIterations, currentStress, "stress");
 	async function getUserId() {
-		console.log("getUser");
 		const dataPromise = new Promise(function (resolve, reject) {
 			axios
 				.get(tokenValidator, {
@@ -231,10 +211,8 @@ const Meet = () => {
 			.getUserMedia({ video: videoConstraints, audio: true })
 			.then((stream) => {
 				userVideo.current.srcObject = stream;
-				console.log("join room called");
 				socket.current.emit("join room", roomID);
 				socket.current.on("all users", (users) => {
-					console.log("on peers", users);
 					const peers = [];
 					users.forEach((userID) => {
 						const peer = createPeer(userID, socket.current.id, stream);
@@ -266,7 +244,6 @@ const Meet = () => {
 			});
 	}
 	function getCurrentStress(stress, iteration) {
-		console.log(stress, "valoe");
 		var res = stress / (5 * iteration);
 		res = res * 100;
 		res = res * 80;

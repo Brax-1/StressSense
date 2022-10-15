@@ -12,9 +12,6 @@ const Dashboard = () => {
 	const [allMeet, setAllMeet] = useState([]);
 	const [allUser, setAllUser] = useState([]);
 	const [currentUser, setCurrentUser] = useState(undefined);
-	function handleUserDetail() {
-		console.log("done");
-	}
 	function getAllMeeting() {
 		const dataPromise = new Promise(function (resolve, reject) {
 			axios
@@ -56,41 +53,41 @@ const Dashboard = () => {
 						for (let i = 0; i < datavalue.length; i++) {
 							colors.push(generateColor());
 						}
-						const ctx = document.getElementById("myChart");
-						const myChart = new Chart(ctx, {
-							type: 'bar',
-							data: {
-								labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-								datasets: [{
-									label: '# of Votes',
-									data: [12, 19, 3, 5, 2, 3],
-									backgroundColor: [
-										'rgba(255, 99, 132, 0.2)',
-										'rgba(54, 162, 235, 0.2)',
-										'rgba(255, 206, 86, 0.2)',
-										'rgba(75, 192, 192, 0.2)',
-										'rgba(153, 102, 255, 0.2)',
-										'rgba(255, 159, 64, 0.2)'
-									],
-									borderColor: [
-										'rgba(255, 99, 132, 1)',
-										'rgba(54, 162, 235, 1)',
-										'rgba(255, 206, 86, 1)',
-										'rgba(75, 192, 192, 1)',
-										'rgba(153, 102, 255, 1)',
-										'rgba(255, 159, 64, 1)'
-									],
-									borderWidth: 1
-								}]
-							},
-							options: {
-								scales: {
-									y: {
-										beginAtZero: true
-									}
-								}
-							}
-						});
+						// const ctx = document.getElementById("myChart");
+						// const myChart = new Chart(ctx, {
+						// 	type: 'bar',
+						// 	data: {
+						// 		labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+						// 		datasets: [{
+						// 			label: '# of Votes',
+						// 			data: [12, 19, 3, 5, 2, 3],
+						// 			backgroundColor: [
+						// 				'rgba(255, 99, 132, 0.2)',
+						// 				'rgba(54, 162, 235, 0.2)',
+						// 				'rgba(255, 206, 86, 0.2)',
+						// 				'rgba(75, 192, 192, 0.2)',
+						// 				'rgba(153, 102, 255, 0.2)',
+						// 				'rgba(255, 159, 64, 0.2)'
+						// 			],
+						// 			borderColor: [
+						// 				'rgba(255, 99, 132, 1)',
+						// 				'rgba(54, 162, 235, 1)',
+						// 				'rgba(255, 206, 86, 1)',
+						// 				'rgba(75, 192, 192, 1)',
+						// 				'rgba(153, 102, 255, 1)',
+						// 				'rgba(255, 159, 64, 1)'
+						// 			],
+						// 			borderWidth: 1
+						// 		}]
+						// 	},
+						// 	options: {
+						// 		scales: {
+						// 			y: {
+						// 				beginAtZero: true
+						// 			}
+						// 		}
+						// 	}
+						// });
 						resolve("Fetched Meeting Ids");
 					}
 				})
@@ -109,25 +106,17 @@ const Dashboard = () => {
 		const myChart = new Chart(ctx, {
 			type: 'bar',
 			data: {
-				labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+				labels: ['Stress', 'Interaction'],
 				datasets: [{
 					label: '# of Votes',
-					data: [12, 19, 3, 5, 2, 3],
+					data: [user.stress_percentage,user.interaction_percentage],
 					backgroundColor: [
 						'rgba(255, 99, 132, 0.2)',
 						'rgba(54, 162, 235, 0.2)',
-						'rgba(255, 206, 86, 0.2)',
-						'rgba(75, 192, 192, 0.2)',
-						'rgba(153, 102, 255, 0.2)',
-						'rgba(255, 159, 64, 0.2)'
 					],
 					borderColor: [
 						'rgba(255, 99, 132, 1)',
 						'rgba(54, 162, 235, 1)',
-						'rgba(255, 206, 86, 1)',
-						'rgba(75, 192, 192, 1)',
-						'rgba(153, 102, 255, 1)',
-						'rgba(255, 159, 64, 1)'
 					],
 					borderWidth: 1
 				}]
@@ -151,13 +140,23 @@ const Dashboard = () => {
 					</div>
 					<div>
 						<div>Interaction</div>
-						<div>{currentUser.interaction_percentage}%</div>
+						<div>{currentUser.interaction_percentage}W</div>
 					</div>
 				</div>
 			)}
 
-			<div style={{ width: "30vw", height: "30vh", marginTop: "10px" }}>
+			<div style={{ width: "500px", height: "500px", marginTop: "10px",position:"absolute",bottom:"10px",right:"100px" }}>
 				<canvas id="myChart" width="100" height="100"></canvas>
+			</div>
+			
+			<div className="dashboard_label">All Users</div>
+			<Divider />
+			<div className="dashboard_users">
+				{allUser.map((user) => (
+					<Button variant="contained" onClick={() => handleShowUserReport(user)}>
+						<div className="dashboard_username">{user.user_email}</div>
+					</Button>
+				))}
 			</div>
 			<div className="dashboard_label">All Meetings</div>
 			<Divider />
@@ -171,15 +170,6 @@ const Dashboard = () => {
 							{moment(meet.start_date).format("MMMM Do YYYY, h:mm a")}
 						</div>
 						<div className="dashboard_useremail">{meet.meeting_id}</div>
-					</Button>
-				))}
-			</div>
-			<div className="dashboard_label">All Users</div>
-			<Divider />
-			<div className="dashboard_users">
-				{allUser.map((user) => (
-					<Button variant="contained" onClick={() => handleShowUserReport(user)}>
-						<div className="dashboard_username">{user.user_email}</div>
 					</Button>
 				))}
 			</div>
