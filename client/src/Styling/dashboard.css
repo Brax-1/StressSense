@@ -1,5 +1,6 @@
 .dashboard_main {
     padding: 20px;
+	width: 50vh;
 }
 .dashboard_card_info {
 	display: flex;
