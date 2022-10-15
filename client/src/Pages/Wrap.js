@@ -9,7 +9,6 @@ const SpeechToText = () => {
     const [cnt,setwordcnt] = useState(0)
     useEffect(() => {
         SpeechRecognition.startListening({continuous:true});
-        console.log('start listening');
     },[]);
 
     let wrdcnt = transcript.split(' ').length

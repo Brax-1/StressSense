@@ -12,9 +12,6 @@ const Dashboard = () => {
 	const [allMeet, setAllMeet] = useState([]);
 	const [allUser, setAllUser] = useState([]);
 	const [currentUser, setCurrentUser] = useState(undefined);
-	function handleUserDetail() {
-		console.log("done");
-	}
 	function getAllMeeting() {
 		const dataPromise = new Promise(function (resolve, reject) {
 			axios
@@ -143,13 +140,23 @@ const Dashboard = () => {
 					</div>
 					<div>
 						<div>Interaction</div>
-						<div>{currentUser.interaction_percentage}%</div>
+						<div>{currentUser.interaction_percentage}W</div>
 					</div>
 				</div>
 			)}
 
-			<div style={{ width: "700px", height: "700px", marginTop: "10px",position:"absolute",bottom:"100px",right:"100px" }}>
+			<div style={{ width: "500px", height: "500px", marginTop: "10px",position:"absolute",bottom:"10px",right:"100px" }}>
 				<canvas id="myChart" width="100" height="100"></canvas>
+			</div>
+			
+			<div className="dashboard_label">All Users</div>
+			<Divider />
+			<div className="dashboard_users">
+				{allUser.map((user) => (
+					<Button variant="contained" onClick={() => handleShowUserReport(user)}>
+						<div className="dashboard_username">{user.user_email}</div>
+					</Button>
+				))}
 			</div>
 			<div className="dashboard_label">All Meetings</div>
 			<Divider />
@@ -163,15 +170,6 @@ const Dashboard = () => {
 							{moment(meet.start_date).format("MMMM Do YYYY, h:mm a")}
 						</div>
 						<div className="dashboard_useremail">{meet.meeting_id}</div>
-					</Button>
-				))}
-			</div>
-			<div className="dashboard_label">All Users</div>
-			<Divider />
-			<div className="dashboard_users">
-				{allUser.map((user) => (
-					<Button variant="contained" onClick={() => handleShowUserReport(user)}>
-						<div className="dashboard_username">{user.user_email}</div>
 					</Button>
 				))}
 			</div>

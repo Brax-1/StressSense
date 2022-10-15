@@ -8,12 +8,15 @@ import { meetDetail } from "../utils/APIRoute";
 import axios from "axios";
 import { promiseToaster, toastOption } from "../Constants/constants";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
 	const [code, setCode] = useState("");
+	const navigate = useNavigate();
 	function handleJoinMeet() {
-		const url = `http://localhost:3000/meet/${code}`;
-		window.open(url, "_blank", "noopener,noreferrer");
+		const url = `${window.location.origin}/meet/${code}`;
+		// window.open(url, "_blank", "noopener,noreferrer");
+		navigate(`/meet/${code}`)
 	}
 	function handleNewMeet() {
 		const unique_id = uuid();
@@ -31,8 +34,9 @@ const Home = () => {
 				});
 		});
 		toast.promise(dataPromise, promiseToaster, toastOption);
-		const url = `http://localhost:3000/meet/${unique_id}`;
-		window.open(url, "_blank", "noopener,noreferrer");
+		const url = `${window.location.origin}/meet/${unique_id}`;
+		// window.open(url, "_blank", "noopener,noreferrer");
+		navigate(`/meet/${unique_id}`)
 	}
 	return (
 		<Layout>

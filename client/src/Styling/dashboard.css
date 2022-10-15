@@ -26,7 +26,7 @@
 }
 .dashboard_users {
 	display: flex;
-	width: 100vw;
+	width: 50vw;
 	flex-wrap: wrap;
     margin-top: 10px;
 }
