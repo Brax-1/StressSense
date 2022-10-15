@@ -71,8 +71,10 @@ router.get("/:email", async (req, res) => {
 
 router.patch("/interaction/:meeting_id/:email/:value", async (req, res) => {
   try {
+    let meet = await Meeting.findOne({ meeting_id: req.params.meeting_id });
+    let meet_id = meet._id;
     await Userdata.findOneAndUpdate(
-      { user_email: req.params.email, meeting_id: req.params.meeting_id },
+      { user_email: req.params.email, meeting_id: meet_id },
       { interaction_percentage: req.params.value }
     );
     res.status(200).send("interaction percentage added succesfully");
@@ -86,7 +88,7 @@ router.patch("/stress/:meeting_id/:email/:value", async (req, res) => {
     let meet = await Meeting.findOne({ meeting_id: req.params.meeting_id });
     let meet_id = meet._id;
     await Userdata.findOneAndUpdate(
-      { user_email: req.params.email, meeting_id:meet_id },
+      { user_email: req.params.email, meeting_id: meet_id },
       { stress_percentage: req.params.value }
     );
     res.status(200).send("stress percentage added succesfully");
