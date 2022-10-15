@@ -1,0 +1,59 @@
+.dashboard_main {
+    padding: 20px;
+	width: 50vh;
+}
+.dashboard_card_info {
+	display: flex;
+}
+.dashboard_card_info > div {
+	background-color: white;
+	padding: 50px;
+	width: 300px;
+	height: 150px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 20px;
+	margin-right: 0;
+	border-radius: 10px;
+	flex-direction: column;
+}
+.dashboard_card_info > div > div:nth-child(1) {
+	font-size: 20px;
+}
+.dashboard_card_info > div > div:nth-child(2) {
+	font-size: 70px;
+}
+.dashboard_users {
+	display: flex;
+	width: 50vw;
+	flex-wrap: wrap;
+    margin-top: 10px;
+}
+.dashboard_users .MuiButton-root {
+	background-color: white !important;
+	margin: 10px !important;
+	padding: 10px 30px !important;
+	border-radius: 10px;
+    color: black;
+	font-size: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.dashboard_username{
+    font-size: 15px;
+    text-transform: capitalize;
+}
+.dashboard_useremail{
+    text-transform: lowercase;
+}
+.dashboard_label{
+    color: white;
+    font-size: 20px;
+    margin: 20px;
+    margin-bottom: 10px;
+}
+.MuiDivider-root{
+    background-color: white;
+}
