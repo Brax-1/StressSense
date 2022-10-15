@@ -1,7 +1,7 @@
 # Modern Meeting WebApp api
 
 Hey! everyone. We did it 😎😎. Our api is up and running On 👇
-[api](http://65.2.186.36:3000/api/) .
+[api](http://13.235.115.99:3000/api/) .
 <br>It is hosted on amazon ec2 instance.
 
 ## Setting up project
